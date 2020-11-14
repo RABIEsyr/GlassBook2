@@ -72,7 +72,7 @@ router.get("/get-posts", checkJwt, (req, res, next) => {
 
 
 });
-router.get('/friends-post', checkJwt,  async(req, res) => {
+router.get('/friends-post', checkJwt, async (req, res) => {
   let index = +req.headers["index2"];
 
   const id = req.decoded.user._id
@@ -92,42 +92,42 @@ router.get('/friends-post', checkJwt,  async(req, res) => {
               finalPosts.push(p)
             }
           }
-         
+
         })
-        res.send(finalPosts)
+        res.send(finalPosts.slice(index, index + 2))
       })
     })
-  
 
 
 
-    //  db.userSchema.findOne({ _id: id })
-    //   .exec( (err, frnds) => {
-    //     fs =  frnds.friends
 
-    //   })
-    // posts = await db.postSchema.find().exec()
-    // let finalPosts = []
-    // posts.map( p => {
+  //  db.userSchema.findOne({ _id: id })
+  //   .exec( (err, frnds) => {
+  //     fs =  frnds.friends
 
-    //   for (let i = 0; i < fs.length; i++) {
-    //     if (p.owner.toString() == fs[i]) {
-    //        finalPosts.push(p)
-    //     }
-    //   }
+  //   })
+  // posts = await db.postSchema.find().exec()
+  // let finalPosts = []
+  // posts.map( p => {
 
-    // })
-    // if (index > finalPosts.length) {
-    //   res.json({
-    //     success: false,
-    //   });
-    // } else {
-    //    console.log('post.js sss', finalPosts)
-    //   res.send(finalPosts)
+  //   for (let i = 0; i < fs.length; i++) {
+  //     if (p.owner.toString() == fs[i]) {
+  //        finalPosts.push(p)
+  //     }
+  //   }
 
-      // res.json(finalPosts.slice(index, index + 3))
+  // })
+  // if (index > finalPosts.length) {
+  //   res.json({
+  //     success: false,
+  //   });
+  // } else {
+  //    console.log('post.js sss', finalPosts)
+  //   res.send(finalPosts)
 
-  
+  // res.json(finalPosts.slice(index, index + 3))
+
+
 
 
 
@@ -135,6 +135,6 @@ router.get('/friends-post', checkJwt,  async(req, res) => {
 })
 
 const friendsPosts = function () {
-  
+
 }
 module.exports = router;
