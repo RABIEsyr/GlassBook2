@@ -96,6 +96,20 @@ module.exports = function (io) {
       }
     })
 
+    socket.on('new-comment', (msg) => {
+      console.log('chat.js new-comment', msg, ', user id:', socket._id)
+      let newComment = new db.commentSchema();
+      newComment.content = msg.comment;
+      newComment.post = msg.postID,
+        newComment.user = socket._id
+      newComment.save((err, comment) => {
+        console.log('chat.js comment:', comment._id)
+        db.postSchema.update(
+          { _id: msg.postID },
+          { $push: { comments: comment._id } },
+        ).exec();
+      })
+    })
     // socket.on('get-fr-req-data', (id) => {
     //   for (let i = 0; i < array_of_connection.length; i++) {
     //     if (array_of_connection[i]._id == id) {

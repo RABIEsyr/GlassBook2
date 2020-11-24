@@ -37,7 +37,8 @@ const postSchema = new schema({
 const commentSchema = new schema({
   post: { type: schema.Types.ObjectId, ref: "postSchema" },
   user: { type: schema.Types.ObjectId, ref: "userSchema" },
-  content: String
+  content: String,
+  date: { type: Date, default: Date.now }
 })
 
 module.exports.userSchema = mongoose.model("userSchema", userSchema);

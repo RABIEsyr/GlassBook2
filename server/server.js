@@ -18,7 +18,7 @@ const postRoute = require("./routes/post");
 const userRoute = require("./routes/users");
 const friendRequestRoute = require("./routes/friendRequest");
 const notificationsRoute = require("./routes/notifications");
-const commentRoute = require("./routes/commnet");
+const commentRoute = require("./routes/comment");
 
 mongoose.Promise = global.Promise;
 const ConnectionUri = config.db;

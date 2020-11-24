@@ -83,7 +83,9 @@ router.get('/friends-post', checkJwt, async (req, res) => {
   db.userSchema.findOne({ _id: id })
     .exec((err, frnds) => {
       fs = frnds.friends
-      posts = db.postSchema.find().exec()
+      posts = db.postSchema.find()
+         .populate('comments')
+          .exec()
       posts.then((value) => {
         value.map(p => {
 
