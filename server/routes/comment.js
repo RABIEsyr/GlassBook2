@@ -10,9 +10,9 @@ router.get('/get-comments', checkJwt, (req, res) => {
     let id = req.decoded.user._id
     db.postSchema.findOne({ _id: postID })
         .populate('comments')
-        .exec((err, posts) => {
-            console.log('comments.js comments 322', posts.comments)
-            res.json(posts.comments)
+        .exec((err, comments) => {
+             console.log('comments.js comments 322', comments)
+            res.json(comments)
         })
     // console.log('comment.js pstId', postID)
     // console.log('comment.js userId', id)

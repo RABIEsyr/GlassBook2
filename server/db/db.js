@@ -30,7 +30,7 @@ const postSchema = new schema({
   // image: {data: Buffer, contentType: String}
   image: String,
   comments: [{ type: schema.Types.ObjectId, ref: "commentSchema" }],
-  data: { type: Date, default: Date.now}
+  date: { type: Date, default: Date.now }
 
 });
 

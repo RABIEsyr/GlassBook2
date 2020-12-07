@@ -52,10 +52,10 @@ module.exports = function (io) {
       }
     });
     socket.on("new-post", (post) => {
-      db.userSchema.findOne({ _id: socket._id })
-        .populate('friends')
+      db.userSchema
+        .findOne({ _id: socket._id })
+        .populate("friends")
         .exec((err, users) => {
-
           for (let i = 0; i < array_of_connection.length; i++) {
             for (let j = 0; j < users.friends.length; j++) {
               if (array_of_connection[i]._id == users.friends[j]._id) {
@@ -63,53 +63,56 @@ module.exports = function (io) {
               }
             }
           }
-        })
-      socket.emit('new-post', post)
+        });
+      socket.emit("new-post", post);
     });
 
-    socket.on('new-fr-req', (id) => {
+    socket.on("new-fr-req", (id) => {
       for (let i = 0; i < array_of_connection.length; i++) {
         if (array_of_connection[i]._id == id) {
-
-
-          db.userSchema.findOne({ _id: id })
-            .exec((err, result) => {
-              array_of_connection[i].emit("new-fr-req", result);
-            })
-
+          db.userSchema.findOne({ _id: id }).exec((err, result) => {
+            array_of_connection[i].emit("new-fr-req", result);
+          });
         }
       }
-    })
+    });
 
-    socket.on('new-fr-req', (id) => {
+    socket.on("new-fr-req", (id) => {
       for (let i = 0; i < array_of_connection.length; i++) {
         if (array_of_connection[i]._id == id) {
-
-
-          db.userSchema.findOne({ _id: id })
-            .exec((err, result) => {
-              array_of_connection[i].emit("new-fr-req", result);
-              array_of_connection[i].emit('get-fr-req-data', '111111111')
-            })
-
+          db.userSchema.findOne({ _id: id }).exec((err, result) => {
+            array_of_connection[i].emit("new-fr-req", result);
+            array_of_connection[i].emit("get-fr-req-data", "111111111");
+          });
         }
       }
-    })
+    });
 
-    socket.on('new-comment', (msg) => {
-      console.log('chat.js new-comment', msg, ', user id:', socket._id)
+    socket.on("new-comment", async(msg) => {
+      // console.log('chat.js new-comment', msg, ', user id:', socket._id)
+      let connectionsSet = new Set(array_of_connection)
       let newComment = new db.commentSchema();
+      console.log("sender id", socket._id)
       newComment.content = msg.comment;
-      newComment.post = msg.postID,
-        newComment.user = socket._id
+      (newComment.post = msg.postID), (newComment.user = socket._id);
       newComment.save((err, comment) => {
-        console.log('chat.js comment:', comment._id)
-        db.postSchema.update(
-          { _id: msg.postID },
-          { $push: { comments: comment._id } },
-        ).exec();
-      })
-    })
+        db.postSchema
+          .updateOne({ _id: msg.postID }, { $push: { comments: comment._id } })
+          .exec(() => {
+            db.postSchema
+              .findOne({ _id: comment.post })
+              .populate("owner")
+              .exec((err, post) => {
+                let friendList = post.owner.friends
+                for (let conn of array_of_connection) {
+                  if (friendList.indexOf(conn._id) !== -1) {
+                    io.to(conn.id).emit("new-comment-posted", comment)
+                  }
+                }               
+              });
+          })
+      });
+    });
     // socket.on('get-fr-req-data', (id) => {
     //   for (let i = 0; i < array_of_connection.length; i++) {
     //     if (array_of_connection[i]._id == id) {
