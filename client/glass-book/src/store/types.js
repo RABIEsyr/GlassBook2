@@ -14,4 +14,14 @@ export const REMOVE_ADD_REQUEST_ONE = "removeAddRequestOne";
 export const GET_FRIEND_POSTS = "getFriendPost";
 export const ADD_COMMENT = "addComment";
 export const GET_COMMENTS = "getComments";
-
+export const GET_CHAT_MESSAGES = "getChatMessages";
+export const RESET_CHAT_MESSAGES = "resetChatMessages";
+export const GET_USER_POSTS = "getUserPost";
+export const GET_ALL_MESSAGES = 'getAllMessages';
+export const CHECK_MATCH_ID = 'checkMatchId';
+export const EDIT_POST = 'editPost';
+export const EDIT_USER_POST = 'editUserPost';
+export const DELETE_POST = 'deletePost';
+export const DELETE_USER_POST = 'deleteUserPost';
+export const UNREAD_MESSAGE = 'unreadMessage'
+//export const ONLIN_OFLINT_STATUS = 'onlineOfflineStatus'

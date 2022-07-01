@@ -9,6 +9,7 @@ const userSchema = new schema({
   password: String,
   isAdmin: { type: Boolean, default: false },
   image: { data: Buffer, contentType: String },
+  publicKey: String,
   gender: String,
   online: { type: Boolean, default: false },
   friends: [{ type: schema.Types.ObjectId, ref: "userSchema" }],
@@ -19,9 +20,10 @@ userSchema.plugin(deepPopulate);
 
 const chatSchema = new schema({
   from: { type: schema.Types.ObjectId, ref: "userSchema" },
-  to: [{ type: schema.Types.ObjectId, ref: "userSchema" }],
-  content: String,
+  to: { type: schema.Types.ObjectId, ref: "userSchema" },
+  text: String,
   date: { type: Date, default: Date.now },
+  isRead: { type: Boolean, default: false },
 });
 
 const postSchema = new schema({
@@ -30,6 +32,7 @@ const postSchema = new schema({
   // image: {data: Buffer, contentType: String}
   image: String,
   comments: [{ type: schema.Types.ObjectId, ref: "commentSchema" }],
+  likes: [{ type: schema.Types.ObjectId, ref: "likeShcema" }],
   date: { type: Date, default: Date.now }
 
 });
@@ -40,8 +43,13 @@ const commentSchema = new schema({
   content: String,
   date: { type: Date, default: Date.now }
 })
+const likeSchema = new schema({
+  post: { type: schema.Types.ObjectId, ref: "postSchema" },
+  user: { type: schema.Types.ObjectId, ref: "userSchema" },
+})
 
 module.exports.userSchema = mongoose.model("userSchema", userSchema);
 module.exports.chatSchema = mongoose.model("chatSchema", chatSchema);
 module.exports.postSchema = mongoose.model("postSchema", postSchema);
 module.exports.commentSchema = mongoose.model("commentSchema", commentSchema);
+module.exports.likeSchema = mongoose.model('likeShcema', likeSchema)

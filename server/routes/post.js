@@ -34,14 +34,19 @@ router.post("/new-post", checkJwt, upload.single("file"), (req, res, next) => {
       db.userSchema.update({ _id: newPost.owner }, { $push: { posts: post._id } })
         .exec()
       if (err) {
-        es.json({
+        res.json({
           success: false,
         });
       } else {
-        res.json({
-          success: true,
-          post,
-        });
+        db.postSchema.findOne({_id:post._id})
+        .populate('owner')
+        .exec((err, post) =>{
+          res.json({
+            success: true,
+            post,
+          });
+        })
+        
       }
     });
   });
@@ -53,6 +58,7 @@ router.get("/get-posts", checkJwt, (req, res, next) => {
   console.log('post.js index 233:', index)
   db.userSchema.findOne({ _id: id })
     .populate('posts')
+    .populate('likes')
     .exec((err, users) => {
       console.log('index 111', index)
       console.log('posts 111', users.posts)
@@ -79,27 +85,34 @@ router.get('/friends-post', checkJwt, async (req, res) => {
   let fs = [];
   let posts = []
   let finalPosts = []
-
-  db.userSchema.findOne({ _id: id })
-    .exec((err, frnds) => {
+  try {
+    db.userSchema.findOne({ _id: id } ,(err, frnds) => {
+      if (frnds != null ) {
       fs = frnds.friends
       posts = db.postSchema.find()
          .populate('comments')
+         .populate('likes')
+         .populate('owner')
           .exec()
       posts.then((value) => {
         value.map(p => {
 
           for (let i = 0; i < value.length; i++) {
-            if (p.owner.toString() == fs[i]) {
-              finalPosts.push(p)
+            if (p.owner._id.toString() == fs[i]) {
+              finalPosts.unshift(p)
             }
           }
 
         })
-        res.send(finalPosts.slice(index, index + 2))
+        res.json(finalPosts.slice(index, index + 2))
       })
+    }
     })
 
+  } catch (error) {
+    console.log(error)
+  }
+  
 
 
 
@@ -136,7 +149,38 @@ router.get('/friends-post', checkJwt, async (req, res) => {
 
 })
 
-const friendsPosts = function () {
+// router.get('/user-post/:id', checkJwt, (req, res, next) => {
+//   let postsArr = []
+//   db.userSchema.findOne({ _id: req.params.id })
+//     .populate('posts')
+//     .exec( (err, da) => {
+//       for (let i = 0; i < da.posts.length; i++) {
+//         db.postSchema.find({ _id: da.posts[i]._id })
+//           .populate('comments')
+//           .exec((err, post) => {
+//             postsArr.push(post)
+//           })
+//       }
+//       return  Promise.resolve(postsArr) 
+     
+//     }).then((p) => {
+//       console.log(p)
+//     })
 
-}
+// })
+router.get('/user-post/:id', checkJwt, async (req, res, next) => {
+  let index = +req.headers["index2"];
+  try {
+      let da = await db.userSchema.findOne({ _id: req.params.id }).populate('posts').exec();
+      let postsArray = [];
+      for (let post of da.posts) {
+          let result = await db.postSchema.find({ _id: post._id }).populate('comments').populate('likes').exec();
+          postsArray.unshift(result);
+      }
+      if (postsArray[0].length > 0)
+      res.send(postsArray.slice(index, index + 2))
+  } catch (e) {
+      console.log(e);
+  }
+});
 module.exports = router;

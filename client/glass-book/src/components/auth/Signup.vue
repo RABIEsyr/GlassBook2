@@ -152,6 +152,7 @@ export default {
         password: this.password,
         gender: this.radio,
       });
+      
     },
   },
   validations: {
